@@ -11,6 +11,11 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Manuel wants to try his cool online to-do app. He goes to check out
         # its homepage.
@@ -37,7 +42,7 @@ class NewVisitorTest(unittest.TestCase):
         # "1: Actually finish the damn TDD tutorial" as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
         time.sleep(1)
-
+        self.check_for_row_in_list_table('1: Actually finish the damn TDD tutorial')
 
         # There is stll a text box inviting her to add another item. He
         # enters "Create a website that is not a to-do list" (Manuel loves
@@ -51,14 +56,8 @@ class NewVisitorTest(unittest.TestCase):
         # The page updates again, and now it shows both items on his list
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(
-            '1: Actually finish the damn TDD tutorial', 
-            [row.text for row in rows]
-            )
-        self.assertIn(
-            '2: Create a website that is not a to-do list', 
-            [row.text for row in rows]
-            )
+        self.check_for_row_in_list_table('1: Actually finish the damn TDD tutorial')
+        self.check_for_row_in_list_table('2: Create a website that is not a to-do list')
 
         # Manuel wonders wheter the site will remember her list. Then he
         # sees that the site has generated a unique URL for him -- there is
