@@ -42,8 +42,8 @@ class NewVisitorTest(unittest.TestCase):
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
             any(row.text == '1: Actually finish the damn TDD tutorial' for row
-            in rows
-                )
+                in rows),
+            "New to-do item did not appear in table"
             )
 
         # There is stll a text box inviting her to add another item. He
