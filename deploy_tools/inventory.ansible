@@ -1,5 +1,8 @@
+[all:vars]
+ansible_user=mnl
+
 [live]
-punpun.me ansible_become=yes ansible_ssh_user=mnl
+punpun.me ansible_become=yes
 
 [staging]
-staging.punpun.me ansible_become=yes ansible_ssh_user=mnl
+staging.punpun.me ansible_become=yes

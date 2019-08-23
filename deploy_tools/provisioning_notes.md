@@ -16,19 +16,21 @@ on Ubuntu:
 
 ## Nginx Virtual Host config
 
-* see nginx.template.conf
-* replace DOMAIN with, e.g., staging.my-domain.com
+* see nginx.conf.j2
+* replace {{ host }} with, e.g., staging.my-domain.com
+* replace {{ ansible_user }} with, e.g., username
 
 ## Systemd service
 
-* see gunicorn-systemd.template.service
-* replace DOMAIN with, e.g., staging.my-domain.com
+* see gunicorn.service.j2
+* replace {{ host }} with, e.g., staging.my-domain.com
+* replace {{ ansible_user }} with, e.g., username 
 
 ## Folder structure:
 
 Asume we have a user account at /home/username
 
-/home/username
+```/home/username
 └── sites
     ├── DOMAIN1
     │    ├── .env
@@ -40,4 +42,4 @@ Asume we have a user account at /home/username
          ├── .env
          ├── db.sqlite3
          ├── etc
-
+```
