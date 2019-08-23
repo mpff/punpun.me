@@ -1,0 +1,5 @@
+[live]
+punpun.me ansible_become=yes ansible_ssh_user=mnl
+
+[staging]
+staging.punpun.me ansible_become=yes ansible_ssh_user=mnl
