@@ -57,3 +57,5 @@ Deploying a new site
 6. collectstatic for static files
 7. Restart Gunicorn job
 8. Run FTs to check everything works
+
+- Test.
