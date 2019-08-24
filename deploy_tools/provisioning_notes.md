@@ -43,3 +43,17 @@ Asume we have a user account at /home/username
          ├── db.sqlite3
          ├── etc
 ```
+
+
+
+Deploying a new site
+====================
+
+1. Create directory in ~/sites
+2. Pull down source code
+3. Start virtualenv in virtualenv
+4. pip install -r requirements.text
+5. manage.py migrate for database (check for errors!)
+6. collectstatic for static files
+7. Restart Gunicorn job
+8. Run FTs to check everything works
