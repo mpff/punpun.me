@@ -31,22 +31,6 @@
         repo: "{{ repo_url }}"
         version: "{{ local_commit.stdout }}"
 
-    - name: check if .git directory exists
-      stat:
-          path: "{{ site_dir }}/.git"
-      register: gitpath
-
-    - name: fetch git repository
-      command: chdir={{ site_dir }} git fetch
-      when: gitpath.stat.exists
-    
-    - name: clone git repository
-      command: chdir={{ site_dir }} git clone {{ repo_url }} .
-      when: not gitpath.stat.exists
-
-    - name: git reset to local commit
-      command: chdir={{ site_dir }} git reset --hard {{ local_commit.stdout }}
-
     - name: Install requirements
       pip: 
         requirements: "{{ site_dir }}/requirements.txt"
