@@ -10,26 +10,26 @@
 
   tasks:
 
-    - name: make sure required packages are installed
+    - name: install required packages
       apt:
           pkg=nginx,git,python3.6,python3.6-venv 
           state=present
+      become: yes
 
-    - name: create site directory if it doesn't exist
+    - name: create site directory 
       file:
           path: "{{ site_dir }}"
           state: directory
 
-    - name: get local checkout sh1
+    - name: get local git checkout
       local_action: command chdir={{ local_dir }} git log --pretty=format:"%H" -n 1
       register: local_commit
 
-    - name: pull down source code
+    - name: get source code
       git:
-          name: "{{ repo_url }}"
-          dest: "{{ site_dir }}"
-          version: "{{ local_commit.stdout }}"
-           
+        dest: "{{ site_dir }}"
+        repo: "{{ repo_url }}"
+        version: "{{ local_commit.stdout }}"
 
     - name: check if .git directory exists
       stat:
@@ -47,17 +47,11 @@
     - name: git reset to local commit
       command: chdir={{ site_dir }} git reset --hard {{ local_commit.stdout }}
 
-    - name: check if virtualenv exists
-      stat:
-          path: "{{ site_dir }}/virtualenv/bin/pip"
-      register: pipath
-
-    - name: start virtualenv
-      command: chdir={{ site_dir }} python3.6 -m venv virtualenv
-      when: pipath.stat.exists
-
-    - name: update virtualenv 
-      command: chdir={{ site_dir }} ./virtualenv/bin/pip install -r requirements.txt
+    - name: Install requirements
+      pip: 
+        requirements: "{{ site_dir }}/requirements.txt"
+        virtualenv: "{{ site_dir }}/virtualenv"
+        virtualenv_command: python3.6 -m venv
 
     - name: check if dotenv exists
       stat:
@@ -71,11 +65,13 @@
           regexp='(\s+)#? ?server_names_hash_bucket_size'
           backrefs=yes
           line='\1server_names_hash_bucket_size 64;'
+      become: yes
 
     - name: add nginx config to sites-available
       template: src=./nginx.conf.j2 dest=/etc/nginx/sites-available/{{ host }}
       notify:
           - restart nginx
+      become: yes
 
     - name: add symlink in nginx sites-enabled
       file:
@@ -84,6 +80,7 @@
           state=link
       notify:
           -restart nginx
+      become: yes
 
     - name: write gunicorn service script
       template:
@@ -91,6 +88,7 @@
           dest=/etc/systemd/system/gunicorn-{{ host }}.service
       notify:
           - restart gunicorn
+      become: yes
 
   handlers:
     - name: restart nginx

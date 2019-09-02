@@ -2,7 +2,7 @@
 ansible_user=mnl
 
 [live]
-punpun.me ansible_become=yes
+punpun.me 
 
 [staging]
-staging.punpun.me ansible_become=yes
+staging.punpun.me
