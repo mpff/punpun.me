@@ -7,6 +7,7 @@
       repo_url: "git@github.com:mpff/punpun.me.git"
       site_dir: "/home/{{ ansible_user }}/sites/{{ host }}"
       local_dir: "{{ inventory_dir }}/.."
+      new_secret: "{{ lookup('password', '/dev/null length=50') }}"
 
   tasks:
 
@@ -21,7 +22,7 @@
           path: "{{ site_dir }}"
           state: directory
 
-    - name: get local git checkout
+    - name: get local git checkout sh1
       local_action: command chdir={{ local_dir }} git log --pretty=format:"%H" -n 1
       register: local_commit
 
@@ -31,16 +32,16 @@
         repo: "{{ repo_url }}"
         version: "{{ local_commit.stdout }}"
 
-    - name: Install requirements
-      pip: 
-        requirements: "{{ site_dir }}/requirements.txt"
-        virtualenv: "{{ site_dir }}/virtualenv"
-        virtualenv_command: python3.6 -m venv
+    - name: create virtualenv
+      command: python3.6 -m venv {{ site_dir }}/virtualenv creates="{{ site_dir }}/virtualenv"
 
-    - name: check if dotenv exists
-      stat:
-          path: "{{ site_dir }}/.env"
-      register: envpath
+    - name: install requirements
+      command: ./virtualenv/bin/pip install -r requirements.txt chdir={{ site_dir }}
+        
+    - name: create dotenv
+      template:
+        src: ./env.j2
+        dest: "{{ site_dir }}/.env"
 
 
     - name: allow long hostnames in nginx
