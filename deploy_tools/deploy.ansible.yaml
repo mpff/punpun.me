@@ -43,6 +43,17 @@
         src: ./env.j2
         dest: "{{ site_dir }}/.env"
 
+    - name: update database
+      django_manage:
+        command: "migrate --noinput"
+        app_path: "{{ site_dir }}"
+        virtualenv: "{{ site_dir }}/virtualenv"
+
+    - name: update staticfiles
+      django_manage:
+        command: "collectstatic --noinput"
+        app_path: "{{ site_dir }}"
+        virtualenv: "{{ site_dir }}/virtualenv"
 
     - name: allow long hostnames in nginx
       lineinfile:
