@@ -30,6 +30,7 @@
         dest: "{{ site_dir }}"
         repo: "{{ repo_url }}"
         version: "{{ local_commit.stdout }}"
+        force: yes
 
     - name: create virtualenv
       command: python3.6 -m venv {{ site_dir }}/virtualenv creates="{{ site_dir }}/virtualenv"
@@ -41,6 +42,8 @@
       template:
         src: ./config_templates/env.j2
         dest: "{{ site_dir }}/.env"
+        mode: '700'
+      become: yes
 
     - name: update database
       django_manage:
