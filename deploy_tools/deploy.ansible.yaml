@@ -7,7 +7,6 @@
       repo_url: "git@github.com:mpff/punpun.me.git"
       site_dir: "/home/{{ ansible_user }}/sites/{{ host }}"
       local_dir: "{{ inventory_dir }}/.."
-      new_secret: "{{ lookup('password', '/dev/null length=50') }}"
 
   tasks:
 
