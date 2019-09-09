@@ -16,62 +16,44 @@
           pkg=nginx,git,python3.6,python3.6-venv 
           state=present
       become: yes
-      tags: 
-        - provision
 
     - name: create site directory 
       file:
           path: "{{ site_dir }}"
           state: directory
-      tags: 
-        - deploy
 
     - name: get local git checkout sh1
       local_action: command chdir={{ local_dir }} git log --pretty=format:"%H" -n 1
       register: local_commit
-      tags: 
-        - deploy
 
     - name: get source code
       git:
         dest: "{{ site_dir }}"
         repo: "{{ repo_url }}"
         version: "{{ local_commit.stdout }}"
-      tags: 
-        - deploy
 
     - name: create virtualenv
       command: python3.6 -m venv {{ site_dir }}/virtualenv creates="{{ site_dir }}/virtualenv"
-      tags: 
-        - deploy
 
     - name: install requirements
       command: ./virtualenv/bin/pip install -r requirements.txt chdir={{ site_dir }}
-      tags: 
-        - deploy
         
     - name: create dotenv
       template:
         src: ./config_templates/env.j2
         dest: "{{ site_dir }}/.env"
-      tags: 
-        - deploy
 
     - name: update database
       django_manage:
         command: "migrate --noinput"
         app_path: "{{ site_dir }}"
         virtualenv: "{{ site_dir }}/virtualenv"
-      tags: 
-        - deploy
 
     - name: update staticfiles
       django_manage:
         command: "collectstatic --noinput"
         app_path: "{{ site_dir }}"
         virtualenv: "{{ site_dir }}/virtualenv"
-      tags: 
-        - deploy
 
     - name: allow long hostnames in nginx
       lineinfile:
@@ -80,39 +62,24 @@
           backrefs=yes
           line='\1server_names_hash_bucket_size 64;'
       become: yes
-      tags:
-        - provision
 
     - name: add nginx config to sites-available
       template: src=./config_templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{ host }}
-      notify:
-          - restart nginx
       become: yes
-      tags:
-        - provision
 
     - name: add symlink in nginx sites-enabled
       file:
           src=/etc/nginx/sites-available/{{ host }}
           dest=/etc/nginx/sites-enabled/{{ host }}
           state=link
-      notify:
-          -restart nginx
       become: yes
-      tags:
-        - provision
 
     - name: write gunicorn service script
       template:
           src=./config_templates/gunicorn.service.j2
           dest=/etc/systemd/system/gunicorn-{{ host }}.service
-      notify:
-          - restart gunicorn
       become: yes
-      tags:
-        - provision
 
-  handlers:
     - name: restart nginx
       service: name=nginx state=restarted
       become: yes
