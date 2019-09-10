@@ -49,9 +49,9 @@ AUTHENTICATION_BACKENDS = [
     'accounts.authentication.PasswordlessAuthenticationBackend',
 ]
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'mnl.pfeuffer@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+EMAIL_HOST = 'email-smtp.eu-west-1.amazonaws.com'
+EMAIL_HOST_USER = os.environ.get('SES_SMTP_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('SES_SMTP_PASS')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
