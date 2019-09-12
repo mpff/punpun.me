@@ -4,6 +4,7 @@ import re
 import time
 from django.core import mail
 from selenium.webdriver.common.keys import Keys
+from contextlib import contextmanager
 
 from .base import FunctionalTest
 
@@ -12,6 +13,18 @@ SUBJECT = 'Your login link for punpun.me'
 
 class LoginTest(FunctionalTest):
 
+    @contextmanager
+    def pop_inbox(self):
+        try:
+            inbox = poplib.POP3_SSL('imap.migadu.com', 995)
+            inbox.user(os.environ['MIGADU_USER'])
+            inbox.pass_(os.environ['MIGADU_PASSWORD'])
+            yield inbox
+
+        finally:
+            inbox.quit()
+
+
     def wait_for_email(self, test_email, subject):
         if not self.staging_server:
             email = mail.outbox[0]
@@ -19,29 +32,19 @@ class LoginTest(FunctionalTest):
             self.assertEqual(email.subject, subject)
             return email.body
 
-        email_id = None
-        time.sleep(10)
         start = time.time()
-        inbox = poplib.POP3_SSL('imap.migadu.com', 995)
-        try:
-            inbox.user(test_email)
-            inbox.pass_(os.environ['MIGADU_PASSWORD'])
-            while time.time() - start < 60:
+        while time.time() - start < 60:
+            with self.pop_inbox() as inbox:
                 # get 10 newest messages
                 count, _ = inbox.stat()
                 for i in reversed(range(max(1, count - 10), count + 1)):
-                    print('getting msg', i)
                     _, lines, __ = inbox.retr(i)
                     lines = [l.decode('utf8') for l in lines]
                     if f'Subject: {subject}' in lines:
-                        email_id = i
+                        inbox.dele(i)
                         body = '\n'.join(lines)
                         return body
-                time.sleep(5)
-        finally:
-            if email_id:
-                inbox.dele(email_id)
-            inbox.quit()
+            time.sleep(5)
 
 
     def test_can_get_email_link_to_log_ing(self):
