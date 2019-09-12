@@ -20,6 +20,7 @@ class LoginTest(FunctionalTest):
             return email.body
 
         email_id = None
+        time.sleep(10)
         start = time.time()
         inbox = poplib.POP3_SSL('imap.migadu.com', 995)
         try:

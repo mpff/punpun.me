@@ -42,8 +42,6 @@
       template:
         src: ./config_templates/env.j2
         dest: "{{ site_dir }}/.env"
-        mode: '700'
-      become: yes
 
     - name: update database
       django_manage:
