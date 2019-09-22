@@ -16,9 +16,9 @@ class LoginTest(FunctionalTest):
     @contextmanager
     def pop_inbox(self):
         try:
-            inbox = poplib.POP3_SSL('imap.migadu.com', 995)
-            inbox.user(os.environ['MIGADU_USER'])
-            inbox.pass_(os.environ['MIGADU_PASSWORD'])
+            inbox = poplib.POP3_SSL(os.environ['TESTMAIL_HOST'], 995)
+            inbox.user(os.environ['TESTMAIL_USER'])
+            inbox.pass_(os.environ['TESTMAIL_PASSWORD'])
             yield inbox
 
         finally:
@@ -47,13 +47,13 @@ class LoginTest(FunctionalTest):
             time.sleep(5)
 
 
-    def test_can_get_email_link_to_log_ing(self):
+    def test_can_get_email_link_to_log_in(self):
         # Edith goes to the awesome lists site and notices
         # a "Log in" section in the navbar for the first time
 
         # It's telling her to enter her emai address, so she does
         if self.staging_server:
-            test_email = 'testing@punpun.me'
+            test_email = os.environ['TESTMAIL_USER'] 
         else:
             test_email = 'edith@example.com'
 

@@ -4,7 +4,7 @@
 
   vars:
       host: "{{ inventory_hostname }}"
-      repo_url: "git@github.com:mpff/punpun.me.git"
+      repo_url: "git@github.com:mpff/superlists.git"
       site_dir: "/home/{{ ansible_user }}/sites/{{ host }}"
       local_dir: "{{ inventory_dir }}/.."
 
