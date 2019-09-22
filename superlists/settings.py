@@ -50,7 +50,7 @@ AUTHENTICATION_BACKENDS = [
     'accounts.authentication.PasswordlessAuthenticationBackend',
 ]
 
-EMAIL_HOST = 'email-smtp.eu-west-1.amazonaws.com'
+EMAIL_HOST = os.environ.get('SES_SMTP_HOST')
 EMAIL_HOST_USER = os.environ.get('SES_SMTP_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('SES_SMTP_PASS')
 EMAIL_PORT = 587
